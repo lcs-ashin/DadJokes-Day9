@@ -128,6 +128,9 @@ struct ContentView: View {
             await loadNewJoke()
             
             print("I tried to load a new joke")
+            
+            // Loading favourites from the local device storage
+            loadFavourites()
         }
         .navigationTitle("icanhazdadjoke?")
         .padding()
@@ -214,6 +217,39 @@ struct ContentView: View {
             
         }
 
+    }
+    
+    // Loads favourites from local storage on the device into the list of favourites
+    func loadFavourites() {
+        
+        // Get a URL that points to the saved JSON data containing our list of favourites
+        let filename = getDocumentsDirectory().appendingPathComponent(savedFavouritesLabel)
+        print(filename)
+                
+        // Attempt to load from the JSON in the stored / persisted file
+        do {
+            
+            // Load the raw data
+            let data = try Data(contentsOf: filename)
+            
+            // What was loaded from the file?
+            print("Got data from file, contents are:")
+            print(String(data: data, encoding: .utf8)!)
+
+            // Decode the data into Swift native data structures
+            // Note that we use [DadJoke] since we are loading into a list (array)
+            // of instances of the DadJoke structure
+            favourites = try JSONDecoder().decode([DadJoke].self, from: data)
+            
+        } catch {
+            
+            // What went wrong?
+            print(error.localizedDescription)
+            print("Could not load data from file, initializing with tasks provided to initializer.")
+
+        }
+
+        
     }
     
 }
