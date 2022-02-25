@@ -10,6 +10,11 @@ import SwiftUI
 struct ContentView: View {
     
     // MARK: Stored properties
+    // Detect when app moves between the foreground, background, and inactive states
+    // NOTE: A complete list of keypaths that can be used with @Environment can be found here:
+    // https://developer.apple.com/documentation/swiftui/environmentvalues
+    @Environment(\.scenePhase) var scenePhase
+    
     @State var currentJoke: DadJoke = DadJoke(id: "",
                                        joke: "Knock, knock...",
                                        status: 0)
@@ -86,6 +91,27 @@ struct ContentView: View {
             
             Spacer()
                         
+        }
+        // React to changes of state for the app (foreground, background, and inactive)
+        .onChange(of: scenePhase) { newPhase in
+            
+            if newPhase == .inactive {
+                
+                print("Inactive")
+                
+            } else if newPhase == .active {
+                
+                print("Active")
+                
+            } else if newPhase == .background {
+                
+                print("Background")
+                
+                // Permanently save the list of tasks
+                persistFavourites()
+                
+            }
+
         }
         // When the app opens, get a new joke from the web service
         .task {
